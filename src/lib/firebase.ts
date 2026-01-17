@@ -5,12 +5,12 @@ import { getStorage } from 'firebase/storage';
 
 // Firebase configuration - Replace with your own config
 const firebaseConfig = {
-  apiKey: import.meta.env.VITE_FIREBASE_API_KEY || "demo-api-key",
-  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN || "demo-project.firebaseapp.com",
-  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID || "demo-project",
-  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET || "demo-project.appspot.com",
-  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID || "123456789",
-  appId: import.meta.env.VITE_FIREBASE_APP_ID || "1:123456789:web:abc123def456",
+  apiKey: "AIzaSyAdfIlDuX6bmlgBGvvXyElxoOnc5ONjync",
+  authDomain: "college-notice-board-dc362.firebaseapp.com",
+  projectId: "college-notice-board-dc362",
+  storageBucket: "college-notice-board-dc362.firebasestorage.app",
+  messagingSenderId: "926785553358",
+  appId: "1:926785553358:web:296c8b05785cd2f1f0e19f"
 };
 
 // Initialize Firebase
