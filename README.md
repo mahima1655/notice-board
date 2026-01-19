@@ -1,73 +1,96 @@
-# Welcome to your Lovable project
+# Campus Connect - College Notice Board System
 
-## Project info
+A modern, real-time notice board system for colleges built with React, TypeScript, and Firebase.
 
-**URL**: https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID
+## 🚀 Features
 
-## How can I edit this code?
+- **Real-time Notice Management** - Create, edit, and delete notices instantly
+- **Role-based Access Control** - Different permissions for students, teachers, and admins
+- **Category-wise Organization** - Organize notices by exams, events, sports, etc.
+- **File Attachments** - Support for PDFs, images, and documents
+- **Responsive Design** - Works seamlessly on desktop and mobile
+- **Firebase Integration** - Real-time database and file storage
+- **Modern UI** - Built with shadcn/ui components
 
-There are several ways of editing your application.
+## 🛠️ Tech Stack
 
-**Use Lovable**
+- **Frontend**: React 18, TypeScript, Vite
+- **UI Library**: shadcn/ui, Tailwind CSS
+- **Backend**: Firebase (Firestore, Storage, Auth)
+- **Form Handling**: React Hook Form with Zod validation
+- **Icons**: Lucide React
+- **Notifications**: Sonner
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and start prompting.
+## 📦 Installation
 
-Changes made via Lovable will be committed automatically to this repo.
+1. Clone the repository:
+```bash
+git clone https://github.com/yourusername/campus-connect.git
+cd campus-connect
+```
 
-**Use your preferred IDE**
+2. Install dependencies:
+```bash
+npm install
+```
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+3. Set up Firebase:
+   - Create a Firebase project
+   - Enable Firestore, Storage, and Authentication
+   - Update Firebase config in `src/lib/firebase.ts`
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
-
-Follow these steps:
-
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
-
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
+4. Start the development server:
+```bash
 npm run dev
 ```
 
-**Edit a file directly in GitHub**
+## 🏗️ Project Structure
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+```
+src/
+├── components/          # Reusable UI components
+├── contexts/           # React contexts (Auth, etc.)
+├── hooks/              # Custom React hooks
+├── lib/                # Utility functions and configs
+├── pages/              # Page components
+├── services/           # API services
+├── types/              # TypeScript type definitions
+└── main.tsx           # Application entry point
+```
 
-**Use GitHub Codespaces**
+## 👥 User Roles
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+- **Students**: View notices, filter by category, download attachments
+- **Teachers**: Create and manage notices, view analytics
+- **Admins**: Full system access, user management, system settings
 
-## What technologies are used for this project?
+## 🔧 Available Scripts
 
-This project is built with:
+- `npm run dev` - Start development server
+- `npm run build` - Build for production
+- `npm run preview` - Preview production build
+- `npm run lint` - Run ESLint
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+## 🚀 Deployment
 
-## How can I deploy this project?
+The project can be deployed to:
+- Vercel
+- Netlify
+- Firebase Hosting
+- Any static hosting service
 
-Simply open [Lovable](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and click on Share -> Publish.
+## 📝 License
 
-## Can I connect a custom domain to my Lovable project?
+This project is licensed under the MIT License.
 
-Yes, you can!
+## 👨‍💻 Contributors
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+- Your Name - Initial work
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
+## 🤝 Contributing
+
+1. Fork the project
+2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request

@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useMemo } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { useSearchParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { Notice, NoticeCategory, DEPARTMENTS } from '@/types';
 import { subscribeToNotices, deleteNotice } from '@/services/noticeService';
@@ -36,6 +36,7 @@ const Notices: React.FC = () => {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [noticeToDelete, setNoticeToDelete] = useState<Notice | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (!userData) return;
@@ -68,9 +69,13 @@ const Notices: React.FC = () => {
     setDeleteDialogOpen(true);
   };
 
+  const handleNoticeClick = (notice: Notice) => {
+    navigate(`/notices/${notice.id}`);
+  };
+
   const handleDeleteConfirm = async () => {
     if (!noticeToDelete) return;
-    
+
     setIsDeleting(true);
     try {
       await deleteNotice(noticeToDelete.id, noticeToDelete.attachmentUrl);
@@ -145,6 +150,7 @@ const Notices: React.FC = () => {
                 notice={notice}
                 onEdit={handleEdit}
                 onDelete={handleDeleteClick}
+                onClick={handleNoticeClick}
                 canEdit={canEditNotice(notice)}
                 canDelete={canDeleteNotice(notice)}
               />

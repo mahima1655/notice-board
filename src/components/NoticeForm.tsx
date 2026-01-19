@@ -27,6 +27,7 @@ import {
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
@@ -104,7 +105,12 @@ const NoticeForm: React.FC<NoticeFormProps> = ({
   }, [editingNotice, form]);
 
   const onSubmit = async (data: NoticeFormData) => {
-    if (!userData) return;
+    console.log('NoticeForm: onSubmit started', data);
+    if (!userData) {
+      console.log('NoticeForm: No userData available');
+      toast.error('You must be logged in to create a notice');
+      return;
+    }
 
     setIsSubmitting(true);
     try {
@@ -112,20 +118,25 @@ const NoticeForm: React.FC<NoticeFormProps> = ({
         title: data.title,
         description: data.description,
         category: data.category as NoticeCategory,
-        department: data.department,
+        department: data.department || undefined,
         visibleTo: data.visibleTo as VisibleTo[],
         isPinned: data.isPinned,
         expiryDate: data.expiryDate,
         createdBy: userData.uid,
-        createdByName: userData.displayName,
+        createdByName: userData.displayName || 'Unknown User',
         isApproved: true,
       };
 
+      console.log('NoticeForm: Calling service with data:', noticeData);
       if (editingNotice) {
+        console.log('NoticeForm: calling updateNotice');
         await updateNotice(editingNotice.id, noticeData, file || undefined);
+        console.log('NoticeForm: updateNotice success');
         toast.success('Notice updated successfully');
       } else {
+        console.log('NoticeForm: calling createNotice');
         await createNotice(noticeData, file || undefined);
+        console.log('NoticeForm: createNotice success');
         toast.success('Notice created successfully');
       }
 
@@ -134,9 +145,10 @@ const NoticeForm: React.FC<NoticeFormProps> = ({
       onOpenChange(false);
       onSuccess?.();
     } catch (error) {
-      console.error('Error saving notice:', error);
-      toast.error('Failed to save notice');
+      console.error('NoticeForm Error saving notice:', error);
+      toast.error('Failed to save notice. check if Cloudinary credentials are set in .env');
     } finally {
+      console.log('NoticeForm: finally block - setIsSubmitting(false)');
       setIsSubmitting(false);
     }
   };
@@ -148,6 +160,9 @@ const NoticeForm: React.FC<NoticeFormProps> = ({
           <DialogTitle className="text-xl font-display">
             {editingNotice ? 'Edit Notice' : 'Create New Notice'}
           </DialogTitle>
+          <DialogDescription>
+            Fill in the details below to {editingNotice ? 'update the' : 'create a new'} notice.
+          </DialogDescription>
         </DialogHeader>
 
         <Form {...form}>

@@ -104,68 +104,7 @@ const Profile: React.FC = () => {
           </CardContent>
         </Card>
 
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-lg">Role Permissions</CardTitle>
-            <CardDescription>What you can do with your current role</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <ul className="space-y-2 text-sm">
-              {userData.role === 'student' && (
-                <>
-                  <li className="flex items-center gap-2">
-                    <span className="h-1.5 w-1.5 rounded-full bg-green-500" />
-                    View all public notices
-                  </li>
-                  <li className="flex items-center gap-2">
-                    <span className="h-1.5 w-1.5 rounded-full bg-green-500" />
-                    Filter and search notices
-                  </li>
-                  <li className="flex items-center gap-2">
-                    <span className="h-1.5 w-1.5 rounded-full bg-green-500" />
-                    Download notice attachments
-                  </li>
-                </>
-              )}
-              {userData.role === 'teacher' && (
-                <>
-                  <li className="flex items-center gap-2">
-                    <span className="h-1.5 w-1.5 rounded-full bg-green-500" />
-                    View all notices including staff-only
-                  </li>
-                  <li className="flex items-center gap-2">
-                    <span className="h-1.5 w-1.5 rounded-full bg-green-500" />
-                    Create department notices
-                  </li>
-                  <li className="flex items-center gap-2">
-                    <span className="h-1.5 w-1.5 rounded-full bg-green-500" />
-                    Edit and delete your own notices
-                  </li>
-                </>
-              )}
-              {userData.role === 'admin' && (
-                <>
-                  <li className="flex items-center gap-2">
-                    <span className="h-1.5 w-1.5 rounded-full bg-green-500" />
-                    Full access to all notices
-                  </li>
-                  <li className="flex items-center gap-2">
-                    <span className="h-1.5 w-1.5 rounded-full bg-green-500" />
-                    Create, edit, and delete any notice
-                  </li>
-                  <li className="flex items-center gap-2">
-                    <span className="h-1.5 w-1.5 rounded-full bg-green-500" />
-                    Manage user roles and permissions
-                  </li>
-                  <li className="flex items-center gap-2">
-                    <span className="h-1.5 w-1.5 rounded-full bg-green-500" />
-                    View system statistics
-                  </li>
-                </>
-              )}
-            </ul>
-          </CardContent>
-        </Card>
+        
       </div>
     </Layout>
   );

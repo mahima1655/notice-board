@@ -180,6 +180,14 @@ const Auth: React.FC = () => {
                             </div>
                           </FormControl>
                           <FormMessage />
+                          <div className="text-right mt-2">
+                            <Link
+                              to="/forgot-password"
+                              className="text-xs text-primary hover:text-primary/80"
+                            >
+                              Forgot password?
+                            </Link>
+                          </div>
                         </FormItem>
                       )}
                     />

@@ -7,11 +7,11 @@ import Layout from '@/components/Layout';
 import NoticeCard from '@/components/NoticeCard';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { 
-  FileText, 
-  Pin, 
-  Calendar, 
-  TrendingUp, 
+import {
+  FileText,
+  Pin,
+  Calendar,
+  TrendingUp,
   Plus,
   ArrowRight,
   Bell
@@ -65,13 +65,7 @@ const Dashboard: React.FC = () => {
       color: 'text-success',
       bg: 'bg-green-500/10',
     },
-    {
-      title: 'Categories',
-      value: NOTICE_CATEGORIES.length,
-      icon: TrendingUp,
-      color: 'text-info',
-      bg: 'bg-blue-500/10',
-    },
+    
   ];
 
   return (
@@ -114,22 +108,22 @@ const Dashboard: React.FC = () => {
           ))}
         </div>
 
-        <div className="grid lg:grid-cols-3 gap-6">
+        <div className="space-y-6">
           {/* Pinned Notices */}
-          <div className="lg:col-span-2 space-y-4">
+          <div className="space-y-4">
             <div className="flex items-center justify-between">
               <h2 className="text-lg font-semibold flex items-center gap-2">
                 <Pin className="h-5 w-5 text-accent" />
-                Pinned Notices
+                Featured Notifications
               </h2>
               <Button variant="ghost" size="sm" onClick={() => navigate('/notices')} className="gap-1">
-                View All
+                View All Notices
                 <ArrowRight className="h-4 w-4" />
               </Button>
             </div>
-            
+
             {loading ? (
-              <div className="space-y-4">
+              <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
                 {[1, 2, 3].map((i) => (
                   <Card key={i} className="animate-pulse">
                     <CardContent className="p-5">
@@ -141,67 +135,63 @@ const Dashboard: React.FC = () => {
                 ))}
               </div>
             ) : pinnedNotices.length > 0 ? (
-              <div className="space-y-4">
+              <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
                 {pinnedNotices.map((notice) => (
-                  <NoticeCard key={notice.id} notice={notice} />
+                  <NoticeCard
+                    key={notice.id}
+                    notice={notice}
+                    onClick={() => navigate(`/notices/${notice.id}`)}
+                  />
                 ))}
               </div>
             ) : (
               <Card className="border-dashed">
                 <CardContent className="p-8 text-center">
                   <Bell className="h-10 w-10 mx-auto text-muted-foreground/50 mb-3" />
-                  <p className="text-muted-foreground">No pinned notices at the moment</p>
+                  <p className="text-muted-foreground">No featured notices at the moment</p>
                 </CardContent>
               </Card>
             )}
           </div>
 
-          {/* Recent Activity Sidebar */}
-          <div className="space-y-4">
-            <h2 className="text-lg font-semibold">Recent Activity</h2>
-            <Card>
-              <CardContent className="p-4 space-y-3">
-                {recentNotices.slice(0, 5).map((notice) => (
-                  <div
-                    key={notice.id}
-                    className="flex items-start gap-3 p-2 rounded-lg hover:bg-muted/50 transition-colors cursor-pointer"
-                    onClick={() => navigate('/notices')}
-                  >
-                    <div className="h-2 w-2 rounded-full bg-accent mt-2 shrink-0" />
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium text-foreground truncate">
-                        {notice.title}
-                      </p>
-                      <p className="text-xs text-muted-foreground">
-                        {notice.createdAt.toLocaleDateString()}
-                      </p>
-                    </div>
-                  </div>
-                ))}
-                {recentNotices.length === 0 && (
-                  <p className="text-sm text-muted-foreground text-center py-4">
-                    No recent notices
-                  </p>
-                )}
-              </CardContent>
-            </Card>
-
-            {/* Category Quick Links */}
-            <Card>
+          {/* Additional Quick Categories section if needed, or just let it breathe */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <Card className="bg-muted/30">
               <CardHeader className="pb-2">
-                <CardTitle className="text-sm font-medium">Quick Categories</CardTitle>
+                <CardTitle className="text-base font-semibold">Browse by Category</CardTitle>
               </CardHeader>
               <CardContent className="p-4 pt-0">
                 <div className="flex flex-wrap gap-2">
-                  {NOTICE_CATEGORIES.slice(0, 6).map((cat) => (
+                  {NOTICE_CATEGORIES.map((cat) => (
                     <Button
                       key={cat.value}
                       variant="outline"
                       size="sm"
-                      className="text-xs"
+                      className="text-xs bg-white hover:bg-accent/5"
                       onClick={() => navigate(`/notices?category=${cat.value}`)}
                     >
                       {cat.label}
+                    </Button>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card className="bg-muted/30">
+              <CardHeader className="pb-2">
+                <CardTitle className="text-base font-semibold">Department Updates</CardTitle>
+              </CardHeader>
+              <CardContent className="p-4 pt-0">
+                <div className="flex flex-wrap gap-2">
+                  {DEPARTMENTS.slice(0, 6).map((dept) => (
+                    <Button
+                      key={dept}
+                      variant="outline"
+                      size="sm"
+                      className="text-xs bg-white hover:bg-accent/5"
+                      onClick={() => navigate('/notices')}
+                    >
+                      {dept}
                     </Button>
                   ))}
                 </div>

@@ -43,70 +43,10 @@ const CreateNotice: React.FC = () => {
             </CardContent>
           </Card>
 
-          {/* Stats Card */}
-          <Card>
-            <CardContent className="p-8 flex flex-col items-center text-center">
-              <div className="h-16 w-16 rounded-2xl bg-success/10 flex items-center justify-center mb-4">
-                <CheckCircle className="h-8 w-8 text-success" />
-              </div>
-              <h3 className="font-semibold text-lg mb-2">Your Activity</h3>
-              <p className="text-sm text-muted-foreground mb-4">
-                {successCount > 0 
-                  ? `You've created ${successCount} notice${successCount > 1 ? 's' : ''} this session`
-                  : 'Start posting notices to track your activity'
-                }
-              </p>
-            </CardContent>
-          </Card>
+          
         </div>
 
-        {/* Tips Section */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-lg">Tips for Effective Notices</CardTitle>
-            <CardDescription>Make your announcements clear and impactful</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <ul className="space-y-3">
-              <li className="flex items-start gap-3">
-                <div className="h-6 w-6 rounded-full bg-primary/10 flex items-center justify-center shrink-0 mt-0.5">
-                  <span className="text-xs font-bold text-primary">1</span>
-                </div>
-                <div>
-                  <p className="font-medium">Use clear, descriptive titles</p>
-                  <p className="text-sm text-muted-foreground">Help readers understand the notice at a glance</p>
-                </div>
-              </li>
-              <li className="flex items-start gap-3">
-                <div className="h-6 w-6 rounded-full bg-primary/10 flex items-center justify-center shrink-0 mt-0.5">
-                  <span className="text-xs font-bold text-primary">2</span>
-                </div>
-                <div>
-                  <p className="font-medium">Select the right category</p>
-                  <p className="text-sm text-muted-foreground">Proper categorization helps users find relevant notices</p>
-                </div>
-              </li>
-              <li className="flex items-start gap-3">
-                <div className="h-6 w-6 rounded-full bg-primary/10 flex items-center justify-center shrink-0 mt-0.5">
-                  <span className="text-xs font-bold text-primary">3</span>
-                </div>
-                <div>
-                  <p className="font-medium">Pin important announcements</p>
-                  <p className="text-sm text-muted-foreground">Pinned notices stay at the top for maximum visibility</p>
-                </div>
-              </li>
-              <li className="flex items-start gap-3">
-                <div className="h-6 w-6 rounded-full bg-primary/10 flex items-center justify-center shrink-0 mt-0.5">
-                  <span className="text-xs font-bold text-primary">4</span>
-                </div>
-                <div>
-                  <p className="font-medium">Attach relevant documents</p>
-                  <p className="text-sm text-muted-foreground">Include PDFs or images for detailed information</p>
-                </div>
-              </li>
-            </ul>
-          </CardContent>
-        </Card>
+        
       </div>
 
       <NoticeForm

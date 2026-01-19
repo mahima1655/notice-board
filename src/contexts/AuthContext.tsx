@@ -1,13 +1,14 @@
 import React, { createContext, useContext, useEffect, useState, ReactNode } from 'react';
-import { 
+import {
   User as FirebaseUser,
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
   signOut as firebaseSignOut,
   onAuthStateChanged,
-  updateProfile
+  updateProfile,
+  sendPasswordResetEmail
 } from 'firebase/auth';
-import { doc, setDoc, getDoc, serverTimestamp } from 'firebase/firestore';
+import { doc, setDoc, getDoc, onSnapshot, serverTimestamp } from 'firebase/firestore';
 import { auth, db } from '@/lib/firebase';
 import { User, UserRole } from '@/types';
 
@@ -18,6 +19,7 @@ interface AuthContextType {
   signUp: (email: string, password: string, displayName: string, role: UserRole, department?: string) => Promise<void>;
   signIn: (email: string, password: string) => Promise<void>;
   signOut: () => Promise<void>;
+  resetPassword: (email: string) => Promise<void>;
   isAdmin: boolean;
   isTeacher: boolean;
   isStudent: boolean;
@@ -63,24 +65,54 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   };
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, async (user) => {
+    let unsubscribeUserDoc: (() => void) | undefined;
+
+    const unsubscribeAuth = onAuthStateChanged(auth, async (user) => {
       setCurrentUser(user);
+
+      // Cleanup previous listener if it exists
+      if (unsubscribeUserDoc) {
+        unsubscribeUserDoc();
+        unsubscribeUserDoc = undefined;
+      }
+
       if (user) {
-        await fetchUserData(user.uid);
+        // Set up real-time listener for user document
+        unsubscribeUserDoc = onSnapshot(doc(db, 'users', user.uid), (userDoc) => {
+          if (userDoc.exists()) {
+            const data = userDoc.data();
+            setUserData({
+              uid: user.uid,
+              email: data.email,
+              displayName: data.displayName,
+              role: data.role,
+              department: data.department,
+              createdAt: data.createdAt?.toDate() || new Date(),
+              photoURL: data.photoURL,
+            });
+          }
+          setLoading(false);
+        }, (error) => {
+          console.error('Error in user doc listener:', error);
+          setLoading(false);
+        });
       } else {
         setUserData(null);
+        setLoading(false);
       }
-      setLoading(false);
     });
 
-    return unsubscribe;
+    return () => {
+      unsubscribeAuth();
+      if (unsubscribeUserDoc) unsubscribeUserDoc();
+    };
   }, []);
 
   const signUp = async (email: string, password: string, displayName: string, role: UserRole, department?: string) => {
     const { user } = await createUserWithEmailAndPassword(auth, email, password);
-    
+
     await updateProfile(user, { displayName });
-    
+
     await setDoc(doc(db, 'users', user.uid), {
       email,
       displayName,
@@ -102,6 +134,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     setUserData(null);
   };
 
+  const resetPassword = async (email: string) => {
+    await sendPasswordResetEmail(auth, email);
+  };
+
   const isAdmin = userData?.role === 'admin';
   const isTeacher = userData?.role === 'teacher';
   const isStudent = userData?.role === 'student';
@@ -113,6 +149,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     signUp,
     signIn,
     signOut,
+    resetPassword,
     isAdmin,
     isTeacher,
     isStudent,

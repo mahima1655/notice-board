@@ -1,19 +1,19 @@
-import { 
-  collection, 
-  addDoc, 
-  updateDoc, 
-  deleteDoc, 
-  doc, 
-  query, 
-  where, 
-  orderBy, 
+import {
+  collection,
+  addDoc,
+  updateDoc,
+  deleteDoc,
+  doc,
+  query,
+  where,
+  orderBy,
   onSnapshot,
   Timestamp,
   getDocs
 } from 'firebase/firestore';
-import { ref, uploadBytes, getDownloadURL, deleteObject } from 'firebase/storage';
-import { db, storage } from '@/lib/firebase';
+import { db } from '@/lib/firebase';
 import { Notice, NoticeCategory, VisibleTo, UserRole } from '@/types';
+import { uploadFile } from './storageService';
 
 const NOTICES_COLLECTION = 'notices';
 
@@ -21,28 +21,52 @@ export const createNotice = async (
   notice: Omit<Notice, 'id' | 'createdAt'>,
   file?: File
 ): Promise<string> => {
+  console.log('noticeService: createNotice called', { hasFile: !!file });
   let attachmentUrl = '';
   let attachmentName = '';
   let attachmentType: 'pdf' | 'image' | undefined;
 
   if (file) {
-    const fileRef = ref(storage, `notices/${Date.now()}_${file.name}`);
-    await uploadBytes(fileRef, file);
-    attachmentUrl = await getDownloadURL(fileRef);
-    attachmentName = file.name;
-    attachmentType = file.type.includes('pdf') ? 'pdf' : 'image';
+    try {
+      console.log('noticeService: Starting file upload...', file.name);
+      const uploadResult = await uploadFile(file);
+      console.log('noticeService: File uploaded, result:', uploadResult);
+      attachmentUrl = uploadResult.url;
+      attachmentName = uploadResult.name;
+      attachmentType = uploadResult.type;
+    } catch (uploadError) {
+      console.error('noticeService: File upload failed', uploadError);
+      throw uploadError; // Re-throw to be caught by caller
+    }
   }
 
-  const docRef = await addDoc(collection(db, NOTICES_COLLECTION), {
-    ...notice,
-    attachmentUrl,
-    attachmentName,
-    attachmentType,
+  // Sanitize notice object to remove undefined values
+  const noticeData = {
+    title: notice.title,
+    description: notice.description,
+    category: notice.category,
+    department: notice.department || null, // Convert undefined to null
+    visibleTo: notice.visibleTo,
+    createdBy: notice.createdBy,
+    createdByName: notice.createdByName,
+    isPinned: notice.isPinned,
+    isApproved: notice.isApproved,
+    attachmentUrl: attachmentUrl || null,
+    attachmentName: attachmentName || null,
+    attachmentType: attachmentType || null,
     createdAt: Timestamp.now(),
     expiryDate: notice.expiryDate ? Timestamp.fromDate(notice.expiryDate) : null,
-  });
+  };
 
-  return docRef.id;
+  console.log('noticeService: Adding doc to Firestore...', noticeData);
+  try {
+    const docRef = await addDoc(collection(db, NOTICES_COLLECTION), noticeData);
+    console.log('noticeService: Doc added successfully with ID:', docRef.id);
+    return docRef.id;
+  } catch (dbError) {
+    console.error('noticeService: Firestore addDoc failed', dbError);
+    throw dbError;
+  }
 };
 
 export const updateNotice = async (
@@ -51,30 +75,43 @@ export const updateNotice = async (
   file?: File
 ): Promise<void> => {
   const updateData: Record<string, unknown> = { ...updates };
-  
+
   if (file) {
-    const fileRef = ref(storage, `notices/${Date.now()}_${file.name}`);
-    await uploadBytes(fileRef, file);
-    updateData.attachmentUrl = await getDownloadURL(fileRef);
-    updateData.attachmentName = file.name;
-    updateData.attachmentType = file.type.includes('pdf') ? 'pdf' : 'image';
+    try {
+      const uploadResult = await uploadFile(file);
+      updateData.attachmentUrl = uploadResult.url;
+      updateData.attachmentName = uploadResult.name;
+      updateData.attachmentType = uploadResult.type;
+    } catch (error) {
+      console.error("Failed to upload new file during update", error);
+      throw error;
+    }
   }
 
   if (updates.expiryDate) {
     updateData.expiryDate = Timestamp.fromDate(updates.expiryDate);
+  } else if (updates.expiryDate === null) {
+    // Explicitly allowing null to clear the date if needed
+    updateData.expiryDate = null;
   }
+
+  // Ensure department is handled if it's being updated
+  if (updates.department === undefined && 'department' in updates) {
+    updateData.department = null;
+  }
+
+  // Remove any remaining undefined keys
+  Object.keys(updateData).forEach(key => updateData[key] === undefined && delete updateData[key]);
 
   await updateDoc(doc(db, NOTICES_COLLECTION, noticeId), updateData);
 };
 
 export const deleteNotice = async (noticeId: string, attachmentUrl?: string): Promise<void> => {
+  // Cloudinary deletion from frontend is restricted/unsafe without signed implementation.
+  // We will skip deleting the file from Cloudinary for now to prioritize security/simplicity.
+  // Ideally, a periodic cleanup script or a backend function should handle this.
   if (attachmentUrl) {
-    try {
-      const fileRef = ref(storage, attachmentUrl);
-      await deleteObject(fileRef);
-    } catch (error) {
-      console.error('Error deleting attachment:', error);
-    }
+    console.log('Skipping file deletion from frontend for safety (requires backend or direct Supabase call).');
   }
   await deleteDoc(doc(db, NOTICES_COLLECTION, noticeId));
 };

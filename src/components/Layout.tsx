@@ -1,8 +1,10 @@
 import React from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
+import { useNotification } from '@/contexts/NotificationContext';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { format } from 'date-fns';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -30,6 +32,7 @@ interface LayoutProps {
 
 const Layout: React.FC<LayoutProps> = ({ children }) => {
   const { userData, signOut, isAdmin, isTeacher } = useAuth();
+  const { unreadCount, recentNotices, markAsRead, clearNotification, open, setOpen } = useNotification();
   const location = useLocation();
   const navigate = useNavigate();
   const [sidebarOpen, setSidebarOpen] = React.useState(false);
@@ -67,8 +70,8 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
               <GraduationCap className="h-6 w-6" />
             </div>
             <div>
-              <h1 className="font-display font-bold text-lg">NoticeBoard</h1>
-              <p className="text-xs text-white/60">College Portal</p>
+              <h1 className="font-display font-bold text-lg">CampusConnect</h1>
+              <p className="text-xs text-white/60">Official Notice Portal</p>
             </div>
           </Link>
         </div>
@@ -129,8 +132,8 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
               <GraduationCap className="h-6 w-6" />
             </div>
             <div>
-              <h1 className="font-display font-bold text-lg">NoticeBoard</h1>
-              <p className="text-xs text-white/60">College Portal</p>
+              <h1 className="font-display font-bold text-lg">CampusConnect</h1>
+              <p className="text-xs text-white/60">Official Notice Portal</p>
             </div>
           </Link>
           <Button
@@ -182,10 +185,61 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
           </div>
 
           <div className="flex items-center gap-3">
-            <Button variant="ghost" size="icon" className="relative">
-              <Bell className="h-5 w-5" />
-              <span className="absolute top-1 right-1 h-2 w-2 bg-destructive rounded-full" />
-            </Button>
+            <DropdownMenu open={open} onOpenChange={(isOpen) => {
+              setOpen(isOpen);
+              if (isOpen) markAsRead();
+            }}>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="icon" className="relative">
+                  <Bell className="h-5 w-5" />
+                  {unreadCount > 0 && (
+                    <span className="absolute top-1 right-1 h-2 w-2 bg-destructive rounded-full ring-2 ring-card animate-pulse" />
+                  )}
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-80 p-0">
+                <div className="px-4 py-3 border-b bg-muted/30">
+                  <p className="font-semibold text-sm">Notifications</p>
+                </div>
+                <div className="max-h-[300px] overflow-y-auto">
+                  {recentNotices.length > 0 ? (
+                    recentNotices.map((notice) => (
+                      <DropdownMenuItem
+                        key={notice.id}
+                        className="px-4 py-3 cursor-pointer border-b last:border-0 items-start gap-3 focus:bg-accent/5"
+                        onClick={() => {
+                          clearNotification(notice.id);
+                          setOpen(false);
+                          navigate(`/notices/${notice.id}`);
+                        }}
+                      >
+                        <div className="h-2 w-2 mt-1.5 rounded-full bg-primary shrink-0 opacity-80" />
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-semibold leading-none mb-1 truncate text-foreground">
+                            {notice.title}
+                          </p>
+                          <p className="text-xs text-muted-foreground line-clamp-2 mb-1">
+                            {notice.description}
+                          </p>
+                          <p className="text-[10px] text-muted-foreground/80">
+                            {format(notice.createdAt, 'MMM d, h:mm a')}
+                          </p>
+                        </div>
+                      </DropdownMenuItem>
+                    ))
+                  ) : (
+                    <div className="px-4 py-8 text-center text-sm text-muted-foreground">
+                      No notifications
+                    </div>
+                  )}
+                </div>
+                <div className="p-2 border-t bg-muted/30">
+                  <Button variant="ghost" size="sm" className="w-full h-8 text-xs" onClick={() => navigate('/notices')}>
+                    View All Notices
+                  </Button>
+                </div>
+              </DropdownMenuContent>
+            </DropdownMenu>
 
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
