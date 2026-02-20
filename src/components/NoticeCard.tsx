@@ -22,6 +22,7 @@ interface NoticeCardProps {
   onClick?: (notice: Notice) => void;
   canEdit?: boolean;
   canDelete?: boolean;
+  isNew?: boolean; // ✅ Add isNew prop
 }
 
 const NoticeCard: React.FC<NoticeCardProps> = ({
@@ -31,15 +32,26 @@ const NoticeCard: React.FC<NoticeCardProps> = ({
   onClick,
   canEdit = false,
   canDelete = false,
+  isNew = false, // ✅ default value
 }) => {
   const categoryInfo = NOTICE_CATEGORIES.find(c => c.value === notice.category);
   const categoryColorClass = getCategoryColor(notice.category);
 
   return (
     <Card
-      className={`notice-card ${notice.isPinned ? 'notice-card-pinned' : ''} animate-fade-in group cursor-pointer transition-all duration-200 hover:shadow-md border-transparent hover:border-primary/20`}
+      className={`notice-card relative ${notice.isPinned ? 'notice-card-pinned' : ''} animate-fade-in group cursor-pointer transition-all duration-200 hover:shadow-md border-transparent hover:border-primary/20`}
       onClick={() => onClick?.(notice)}
     >
+      {/* New badge */}
+      {isNew && (
+        <Badge
+          variant="outline"
+          className="absolute top-2 left-2 text-xs bg-green-100 text-green-800 border-green-300"
+        >
+          New
+        </Badge>
+      )}
+
       <CardHeader className="pb-3">
         <div className="flex items-start justify-between gap-3">
           <div className="flex-1 min-w-0">
@@ -63,6 +75,7 @@ const NoticeCard: React.FC<NoticeCardProps> = ({
               {notice.title}
             </h3>
           </div>
+
           {(canEdit || canDelete) && (
             <div className="flex items-center gap-1 shrink-0">
               {canEdit && (
@@ -95,6 +108,7 @@ const NoticeCard: React.FC<NoticeCardProps> = ({
           )}
         </div>
       </CardHeader>
+
       <CardContent className="pt-0 flex-1 flex flex-col">
         <p className="text-muted-foreground text-sm leading-relaxed mb-4 line-clamp-3 break-words">
           {notice.description}
@@ -109,12 +123,6 @@ const NoticeCard: React.FC<NoticeCardProps> = ({
             <div className="flex items-center gap-1 shrink-0">
               <Calendar className="h-3.5 w-3.5" />
               <span>{format(notice.createdAt, 'MMM d, yyyy')}</span>
-            </div>
-            <div className="flex items-center gap-1 shrink-0">
-              <span className="flex items-center gap-1">
-                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-eye"><path d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0" /><circle cx="12" cy="12" r="3" /></svg>
-                {notice.viewCount || 0}
-              </span>
             </div>
             {notice.expiryDate && (
               <div className="flex items-center gap-1 text-warning shrink-0">
